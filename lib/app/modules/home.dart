@@ -1,11 +1,12 @@
-import 'package:todark/app/modules/tasks/view/all_tasks.dart';
-import 'package:todark/app/modules/settings/view/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:todark/app/controller/controller.dart';
+import 'package:todark/app/modules/settings/view/settings.dart';
+import 'package:todark/app/modules/tasks/view/all_tasks.dart';
 import 'package:todark/app/modules/tasks/widgets/tasks_action.dart';
-import 'package:todark/app/modules/todos/view/calendar_todos.dart';
 import 'package:todark/app/modules/todos/view/all_todos.dart';
+import 'package:todark/app/modules/todos/view/calendar_todos.dart';
 import 'package:todark/app/modules/todos/widgets/todos_action.dart';
 import 'package:todark/theme/theme_controller.dart';
 
@@ -17,6 +18,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final todoController = Get.put(TodoController());
   final themeController = Get.put(ThemeController());
   int tabIndex = 0;
 
@@ -36,6 +38,19 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(
+              Icons.refresh,
+            ),
+            onPressed: () {
+              // do something
+              todoController.refreshTasks();
+            },
+          )
+        ],
+      ),
       body: IndexedStack(
         index: tabIndex,
         children: pages,

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -7,6 +8,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:isar/isar.dart';
 import 'package:todark/app/data/schema.dart';
+import 'package:todark/app/services/caldav.dart';
 import 'package:todark/app/services/notification.dart';
 import 'package:todark/main.dart';
 
@@ -28,6 +30,11 @@ class TodoController extends GetxController {
     super.onInit();
     tasks.assignAll(isar.tasks.where().findAllSync());
     todos.assignAll(isar.todos.where().findAllSync());
+  }
+
+  Future<void> refreshTasks() async {
+    var calDav = CalDav();
+    calDav.request();
   }
 
   // Tasks
