@@ -8,15 +8,15 @@ class CalDav {
       headers: Authorization('admin', 'admin').basic(),
     );
 
-    var principal = await client.getPrincipal('/remote.php/dav');
-    var calHomeset = await client.getCalendarHomeSet('/remote.php/dav');
+    var principalPath = await client.getPrincipal('/remote.php/dav');
+    var calHomesetPath = await client.getCalendarHomeSet(principalPath);
 
-    var initialSyncResult = await client.getCalendars('/remote.php/dav');
+    var initialSyncResult = await client.getCalendars(calHomesetPath);
 
     var calendars = <String>[];
 
     // Print calendars and save calendars path
-    for (var response in initialSyncResult.multistatus!.response) {
+    for (var response in initialSyncResult.multistatus!.responses) {
       print('PATH: ${response.href}');
 
       if (response.status.contains("200")) {
@@ -39,7 +39,6 @@ class CalDav {
     // Print calendar objects info
     if (calendars.isNotEmpty) {
       await getEvents(client, calendars);
-
       await generateEvent(client, calendars);
     }
   }
@@ -47,7 +46,7 @@ class CalDav {
   Future<void> getEvents(CalDavClient client, List<String> calendars) async {
     var getObjectsResult = await client.getEvents(calendars.first);
 
-    for (var result in getObjectsResult.multistatus!.response) {
+    for (var result in getObjectsResult.multistatus!.responses) {
       print('PATH: ${result.href}');
 
       if (result.status.contains('200')) {
