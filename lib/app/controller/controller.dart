@@ -7,6 +7,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:isar/isar.dart';
+import 'package:todark/app/data/calendar.dart';
 import 'package:todark/app/data/schema.dart';
 import 'package:todark/app/services/caldav.dart';
 import 'package:todark/app/services/notification.dart';
@@ -34,7 +35,18 @@ class TodoController extends GetxController {
 
   Future<void> refreshTasks() async {
     var calDav = CalDav();
-    calDav.request();
+    var calendars = await calDav.findAllCalendars();
+
+    for (var cal in calendars) {
+      List<Calendar> searchTask;
+      searchTask = isar.calendars.filter().hrefEqualTo(cal.href).findAllSync();
+
+      if (searchTask.isEmpty) {
+        isar.writeTxnSync(() => isar.calendars.putSync(cal));
+        addTask(cal.title, cal.description, Color(cal.taskColor));
+        EasyLoading.showSuccess('createCategory'.tr, duration: duration);
+      }
+    }
   }
 
   // Tasks

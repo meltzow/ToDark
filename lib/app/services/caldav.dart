@@ -1,7 +1,8 @@
 import 'package:caldav_client/caldav_client.dart';
+import 'package:todark/app/data/calendar.dart';
 
 class CalDav {
-  Future<void> request() async {
+  Future<List<Calendar>> findAllCalendars() async {
     var client = CalDavClient(
       baseUrl: 'http://192.168.178.81:8080',
       headers: Authorization('admin', 'admin').basic(),
@@ -10,19 +11,12 @@ class CalDav {
     var principalPath = await client.getPrincipal('/remote.php/dav');
     var calHomesetPath = await client.getCalendarHomeSet(principalPath);
 
-    var allCaledendars = await client.getCalendars(calHomesetPath);
+    var allCalendars = await client.getCalendars(calHomesetPath);
 
-    var calendars = <String>[];
-
-    // Print calendars and save calendars path
-    for (var cal in allCaledendars) {
-      print('PATH: ${cal.displayName} - ${cal.supportedCalendarComponentSet}');
-    }
-
-    // Print calendar objects info
-    if (calendars.isNotEmpty) {
-      await getEvents(client, calendars);
-    }
+    return allCalendars
+        .map((e) =>
+            Calendar(title: e.displayName, taskColor: 0000001, href: e.href))
+        .toList();
   }
 
   Future<void> getEvents(CalDavClient client, List<String> calendars) async {
